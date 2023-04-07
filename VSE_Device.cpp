@@ -9,7 +9,7 @@ vse::VseDevice::VseDevice()
 
 vse::VseDevice::~VseDevice()
 {
-	if (enableValidationLayers) {
+	if (debugMode) {
 		vse::VseDebugMessenger::createInstance()->DestroyDebugUtilsMessengerEXT(instance, vse::VseDebugMessenger::createInstance()->debugMessenger, nullptr);
 		std::cout << "VseDebugMessenger destroyed" << std::endl;
 	}
@@ -21,11 +21,12 @@ void vse::VseDevice::initVulkan()
 {
 	createInstance();
 	vse::VseDebugMessenger::createInstance()->setupDebugMessenger(instance);
+	pickPhysicalDevice();
 }
 
 void vse::VseDevice::createInstance()
 {
-	if (enableValidationLayers && !checkValidationLayerSupport()) {
+	if (debugMode && !checkValidationLayerSupport()) {
 		throw std::runtime_error("validation layers requested, but not available!");
 	}
 	//создаем инстанс вулкана, заполняем структуру с настройками инстанса
@@ -46,7 +47,7 @@ void vse::VseDevice::createInstance()
 	createInfo.ppEnabledExtensionNames = extensions.data();
 		
 	VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
-	if (enableValidationLayers) {
+	if (debugMode) {
 		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
 		createInfo.ppEnabledLayerNames = validationLayers.data();
 
@@ -91,10 +92,45 @@ std::vector<const char*> vse::VseDevice::getRequiredExtensions()
 	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount); // возвращает список и колличество расширениий требуемых для glfw
 	std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
-	if (enableValidationLayers) {
+	if (debugMode) {
 		//если слои валидации включены (включены в дебаг режиме)
 		//добавляем макрос 
-		extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME); // макрос, расширяется в полное имя расширения ответственного дебаг утилиты(колбэк отладочных сообщений и т.д) "VK_EXT_debug_utils"
+		extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME); // макрос, расширяется в полное имя расширения ответственного за дебаг утилиты(колбэк отладочных сообщений и т.д) "VK_EXT_debug_utils"
 	}
 	return extensions;
+}
+
+void vse::VseDevice::pickPhysicalDevice()
+{
+	uint32_t deviceCount = 0;
+	vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
+	if (deviceCount == 0) {
+		throw std::runtime_error("failed to find GPUs with Vulkan support");
+	}
+	std::vector<VkPhysicalDevice> devices(deviceCount);
+	vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
+	for (const auto& device : devices) {
+		if (isDeviceSuitable(device)) {
+			physicalDevice = device;
+			break;
+		}
+		if (physicalDevice == VK_NULL_HANDLE) {
+			throw std::runtime_error("failed to find a suitable GPU");
+		}
+	}
+	
+}
+
+bool vse::VseDevice::isDeviceSuitable(VkPhysicalDevice device)
+{
+	VkPhysicalDeviceProperties deviceProperties;
+	VkPhysicalDeviceFeatures deviceFeatures;
+
+	vkGetPhysicalDeviceProperties(device, &deviceProperties);
+	vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
+	if (debugMode) {
+		std::cout << "device name: " << deviceProperties.deviceName << std::endl;
+		std::cout << "device api version: " << deviceProperties.apiVersion << std::endl;
+	}
+	return true;
 }

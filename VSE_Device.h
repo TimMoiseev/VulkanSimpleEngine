@@ -18,9 +18,12 @@ namespace vse {
 		~VseDevice();
 		void initVulkan();
 		VkInstance instance;
+		VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 	private:
 		void createInstance();
 		bool checkValidationLayerSupport();
 		std::vector<const char*> getRequiredExtensions();
+		void pickPhysicalDevice();
+		bool isDeviceSuitable(VkPhysicalDevice device);
 	};
 }

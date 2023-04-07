@@ -4,7 +4,7 @@
 
 void vse::VseDebugMessenger::setupDebugMessenger(VkInstance& instance)
 {
-	if (!enableValidationLayers) return;
+	if (!debugMode) return;
 
 	VkDebugUtilsMessengerCreateInfoEXT createInfo;
 	populateDebugMessengerCreateInfo(createInfo);

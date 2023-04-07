@@ -2,9 +2,9 @@
 #include <iostream>
 
 #ifdef NDEBUG
-const bool enableValidationLayers = false;
+const bool debugMode = false;
 #else
-const bool enableValidationLayers = true;
+const bool debugMode = true;
 #endif
 
 namespace vse {
