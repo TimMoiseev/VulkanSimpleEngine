@@ -12,7 +12,6 @@ namespace vse {
 		glfwDestroyWindow(window);
 		glfwTerminate();
 		std::cout << "vseWindow destructor call" << std::endl;
-
 	}
 	bool VseWindow::shouldClose()
 	{

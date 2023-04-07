@@ -11,9 +11,8 @@ namespace vse {
 	class VseDebugMessenger {
 	public:
 		static VseDebugMessenger* createInstance() {
-
+			//синглетон Майерса
 			static VseDebugMessenger instance;
-			
 			return &instance;
 		}
 
@@ -23,14 +22,8 @@ namespace vse {
 		void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);
 		VkDebugUtilsMessengerEXT debugMessenger;
 	private:
-		
 		VseDebugMessenger() { std::cout << "VseDebugMessenger created" << std::endl; };
 		~VseDebugMessenger() {};
-		
-		
-		
 		VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger);
-		
-		
 	};
 }

@@ -10,8 +10,6 @@ namespace vse {
 		bool shouldClose();
 		GLFWwindow* window;
 	private:
-		
-		
 		void initWindow();
 	};
 }

@@ -7,14 +7,9 @@
 #include <stdexcept>
 #include <cstdlib>
 
-//#include "VSE_DebugMessenger.h"
-
 const std::vector<const char*> validationLayers = {
 	"VK_LAYER_KHRONOS_validation"
 };
-
-
-
 
 namespace vse {
 	class VseDevice {
@@ -23,13 +18,9 @@ namespace vse {
 		~VseDevice();
 		void initVulkan();
 		VkInstance instance;
-		
 	private:
-		/*VseWindow vseWindow;*/
 		void createInstance();
 		bool checkValidationLayerSupport();
 		std::vector<const char*> getRequiredExtensions();
-		
-		
 	};
 }

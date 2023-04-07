@@ -4,7 +4,6 @@
 
 void vse::VseDebugMessenger::setupDebugMessenger(VkInstance& instance)
 {
-	
 	if (!enableValidationLayers) return;
 
 	VkDebugUtilsMessengerCreateInfoEXT createInfo;
@@ -31,15 +30,6 @@ void vse::VseDebugMessenger::populateDebugMessengerCreateInfo(VkDebugUtilsMessen
 	createInfo.pfnUserCallback = debugCallback;
 }
 
-//vse::VseDebugMessenger::~VseDebugMessenger()
-//{
-//	/*if (enableValidationLayers) {
-//		DestroyDebugUtilsMessengerEXT(vkInstance, debugMessenger, nullptr);
-//	}*/
-//}
-
-
-
 VkResult vse::VseDebugMessenger::CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger)
 {
 	auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
@@ -50,8 +40,6 @@ VkResult vse::VseDebugMessenger::CreateDebugUtilsMessengerEXT(VkInstance instanc
 		return VK_ERROR_EXTENSION_NOT_PRESENT;
 	}
 }
-
-
 
 void vse::VseDebugMessenger::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator)
 {
