@@ -15,6 +15,7 @@ namespace vse {
 		~VseApp();
 	private:
 		VseWindow vseWindow;
-		VseDevice vseDevice;
+		VseDevice vseDevice{ vseWindow };
+
 	};
 }

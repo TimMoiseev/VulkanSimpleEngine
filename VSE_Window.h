@@ -1,6 +1,10 @@
 #pragma once
+#define VK_USE_PLATFORM_WIN32_KHR
+#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
-
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3native.h>
+#include <vulkan/vulkan.h>
 namespace vse {
 
 	class VseWindow {
@@ -9,7 +13,12 @@ namespace vse {
 		~VseWindow();
 		bool shouldClose();
 		GLFWwindow* window;
+		void createWindowSurface(VkInstance* instancce);
+		VkSurfaceKHR surface;
 	private:
-		void initWindow();
+		void createWindow();
+		
+		
+
 	};
 }
