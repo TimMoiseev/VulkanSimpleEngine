@@ -1,6 +1,6 @@
 #include "VSE_Window.h"
-#include <iostream>
-
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3native.h>
 namespace vse {
 	VseWindow::VseWindow()
 	{
@@ -25,7 +25,7 @@ namespace vse {
 		window = glfwCreateWindow(800, 600, "VSE", nullptr, nullptr);
 		
 	}
-	void VseWindow::createWindowSurface( VkInstance* instance)
+	void VseWindow::createWindowSurface(VkInstance* instance)
 	{
 		VkWin32SurfaceCreateInfoKHR createInfo{};
 		createInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;

@@ -1,3 +1,4 @@
+#pragma once
 #include "VSE_App.h"
 
 void vse::VseApp::run()

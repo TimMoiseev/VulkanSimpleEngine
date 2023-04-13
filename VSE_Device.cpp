@@ -1,10 +1,11 @@
 #include "VSE_Device.h"
 #include "VSE_DebugMessenger.h"
 #include <GLFW/glfw3.h>
+#include <set>
 #define GLFW_INCLUDE_VULKAN
 namespace vse {
 
-	VseDevice::VseDevice(VseWindow& window) : vseWindow{ window }
+	VseDevice::VseDevice(VseWindow& window) : refWindow{ window }
 	{
 		std::cout << "vseDevice constructor call" << std::endl;
 		initVulkan();
@@ -12,7 +13,7 @@ namespace vse {
 
 	VseDevice::~VseDevice()
 	{
-		vkDestroySurfaceKHR(instance, vseWindow.surface, nullptr);
+		vkDestroySurfaceKHR(instance, refWindow.surface, nullptr);
 		vkDestroyDevice(device, nullptr);
 		if (debugMode) {
 			VseDebugMessenger::createInstance()->DestroyDebugUtilsMessengerEXT(instance, VseDebugMessenger::createInstance()->debugMessenger, nullptr);
@@ -26,7 +27,7 @@ namespace vse {
 	{
 		createInstance();
 		VseDebugMessenger::createInstance()->setupDebugMessenger(instance);
-		vseWindow.createWindowSurface(&instance);
+		refWindow.createWindowSurface(&instance);
 		pickPhysicalDevice();
 		createLogicalDevice();
 		
@@ -34,19 +35,31 @@ namespace vse {
 
 	void VseDevice::createLogicalDevice()
 	{
-		QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
-		VkDeviceQueueCreateInfo queueCreateInfo{};
-		queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-		queueCreateInfo.queueFamilyIndex = indices.graphicsFamily.value();
-		queueCreateInfo.queueCount = 1;
+		 indices = findQueueFamilies(physicalDevice);
+
+		std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+		std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily.value(), indices.presentFamily.value() };
 		float queuePriority = 1.0f;
-		queueCreateInfo.pQueuePriorities = &queuePriority;
+		for (uint32_t queueFamily : uniqueQueueFamilies) {
+			VkDeviceQueueCreateInfo queueCreateInfo{};
+			queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+			queueCreateInfo.queueFamilyIndex = queueFamily;
+			queueCreateInfo.queueCount = 1;
+			queueCreateInfo.pQueuePriorities = &queuePriority;
+			queueCreateInfos.push_back(queueCreateInfo);
+		}
+		
 		VkPhysicalDeviceFeatures deviceFeatures{};
 		VkDeviceCreateInfo createInfo{};
-		createInfo.pQueueCreateInfos = &queueCreateInfo;
-		createInfo.queueCreateInfoCount = 1;
+		createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+
+		createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
+		createInfo.pQueueCreateInfos = queueCreateInfos.data();
+
 		createInfo.pEnabledFeatures = &deviceFeatures;
-		createInfo.enabledExtensionCount = 0;
+
+		createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
+		createInfo.ppEnabledExtensionNames = deviceExtensions.data();
 		if (debugMode) {
 			createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
 			createInfo.ppEnabledLayerNames = validationLayers.data();
@@ -57,7 +70,8 @@ namespace vse {
 		if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &device) != VK_SUCCESS) {
 			throw std::runtime_error("failed to create logical device");
 		}
-		vkGetDeviceQueue(device, indices.graphicsFamily.value(), 0, &graphicsQueue); //ролучаем дескриптор очереди графических команд
+		vkGetDeviceQueue(device, indices.graphicsFamily.value(), 0, &graphicsQueue); //Получаем дескриптор очереди графических команд
+		vkGetDeviceQueue(device, indices.presentFamily.value(), 0, &presentQueue); // Получаем дескриптор очереди поддерживающей отображение
 	}
 
 	QueueFamilyIndices VseDevice::findQueueFamilies(VkPhysicalDevice device)
@@ -77,7 +91,7 @@ namespace vse {
 				indices.graphicsFamily = i;
 			}
 			VkBool32 presentSupport = false;
-			vkGetPhysicalDeviceSurfaceSupportKHR(device, i, vseWindow.surface, &presentSupport);
+			vkGetPhysicalDeviceSurfaceSupportKHR(device, i, refWindow.surface, &presentSupport);
 			if (presentSupport) {
 				indices.presentFamily = i;
 			}
@@ -157,7 +171,7 @@ namespace vse {
 		glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount); // возвращает список и колличество расширениий требуемых для glfw
 		std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 		extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-		auto result = glfwVulkanSupported();
+		
 		if (debugMode) {
 			//если слои валидации включены (включены в дебаг режиме)
 			//добавляем макрос 
@@ -188,8 +202,27 @@ namespace vse {
 
 	}
 
+	bool VseDevice::checkDeviceExtensionSupport(VkPhysicalDevice device) {
+		
+		uint32_t extensionCount;
+		vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
+
+		std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+		vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
+
+		std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
+
+		for (const auto& extension : availableExtensions) {
+			requiredExtensions.erase(extension.extensionName);
+		}
+		//если все расширения кторые мы написали вручную(requiredExtensions) уже есть в availableExtensions то удаляем их от туда
+		return requiredExtensions.empty();
+	}
+
 	bool VseDevice::isDeviceSuitable(VkPhysicalDevice device)
 	{
+		
+
 		if (debugMode) {
 			VkPhysicalDeviceProperties deviceProperties;
 			VkPhysicalDeviceFeatures deviceFeatures;
@@ -201,6 +234,8 @@ namespace vse {
 		}
 
 		QueueFamilyIndices indices = findQueueFamilies(device);
-		return indices.isComplete();
+		bool extensionsSupported = checkDeviceExtensionSupport(device);
+		//return true если нашли требуемые очереди команд(graphics and present) и требуемые расширения поддерживаются физическим устрорйством
+		return indices.isComplete() && extensionsSupported;
 	}
 }

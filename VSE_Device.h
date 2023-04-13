@@ -1,17 +1,7 @@
 #pragma once
-#include <vector>
-#include <vulkan/vulkan.h>
-#define GLFW_INCLUDE_VULKAN
-#define VK_USE_PLATFORM_WIN32_KHR
-#include <iostream>
-#include <stdexcept>
-#include <cstdlib>
-#include <optional>
 #include "VSE_Window.h"
 
-const std::vector<const char*> validationLayers = {
-	"VK_LAYER_KHRONOS_validation"
-};
+
 
 namespace vse {
 	struct QueueFamilyIndices {
@@ -23,18 +13,29 @@ namespace vse {
 		}
 	};
 
+	const std::vector<const char*> validationLayers = {
+	"VK_LAYER_KHRONOS_validation"
+	};
+
 	class VseDevice {
 	public:
 		VseDevice( VseWindow& window);
 		~VseDevice();
 		void initVulkan();
-		void createLogicalDevice();
-		VseWindow& vseWindow;
+		
+		VseWindow& refWindow;
 		VkInstance instance;
 		VkPhysicalDevice physicalDevice = VK_NULL_HANDLE; // физическое устройство
 		VkDevice device; // логическое устройство
-		VkQueue graphicsQueue; //дескриптор очереди граффических команд
+		QueueFamilyIndices indices;
 	private:
+		const std::vector<const char*> deviceExtensions = {
+			VK_KHR_SWAPCHAIN_EXTENSION_NAME
+		};
+		bool checkDeviceExtensionSupport(VkPhysicalDevice device);
+		VkQueue graphicsQueue; //дескриптор очереди с поддержкой граффических команд
+		VkQueue presentQueue; //Дескриптор очереди с поддержкой отображения
+		void createLogicalDevice();
 		QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
 		void createInstance();
 		bool checkValidationLayerSupport();

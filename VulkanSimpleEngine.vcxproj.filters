@@ -33,6 +33,9 @@
     <ClCompile Include="VSE_DebugMessenger.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="VSE_SwapChain.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VSE_Device.h">
@@ -42,6 +45,9 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="VSE_Window.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="VSE_SwapChain.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
