@@ -14,7 +14,7 @@ namespace vse {
     public:
         VseSwapChain(VseDevice& refDevice);
         ~VseSwapChain();
-        
+        VkExtent2D swapChainExtent; //размеры отрисовки изображения
     private:
         std::vector<VkImageView> swapChainImageViews;
         bool isSwapChainSuitable();
@@ -27,6 +27,6 @@ namespace vse {
         VkSwapchainKHR swapChain; 
         std::vector<VkImage> swapChainImages; //контейнер для хранения изображений рендринга
         VkFormat swapChainImageFormat;
-        VkExtent2D swapChainExtent; //размеры отрисовки изображения
+        
     };
 }

@@ -17,7 +17,7 @@ namespace vse {
 		VseWindow vseWindow;
 		VseDevice vseDevice{ vseWindow };
 		VseSwapChain vseSwapChain{vseDevice};
-		VsePipeline vsePipeline{vseDevice.device};
+		VsePipeline vsePipeline{vseDevice.device, vseSwapChain.swapChainExtent};
 
 	};
 }
