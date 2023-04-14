@@ -17,6 +17,10 @@ namespace vse {
 	"VK_LAYER_KHRONOS_validation"
 	};
 
+	const std::vector<const char*> deviceExtensions = {
+			VK_KHR_SWAPCHAIN_EXTENSION_NAME
+	};
+
 	class VseDevice {
 	public:
 		VseDevice( VseWindow& window);
@@ -29,9 +33,7 @@ namespace vse {
 		VkDevice device; // логическое устройство
 		QueueFamilyIndices indices;
 	private:
-		const std::vector<const char*> deviceExtensions = {
-			VK_KHR_SWAPCHAIN_EXTENSION_NAME
-		};
+		
 		bool checkDeviceExtensionSupport(VkPhysicalDevice device);
 		VkQueue graphicsQueue; //дескриптор очереди с поддержкой граффических команд
 		VkQueue presentQueue; //Дескриптор очереди с поддержкой отображения

@@ -16,15 +16,17 @@ namespace vse {
         ~VseSwapChain();
         
     private:
+        std::vector<VkImageView> swapChainImageViews;
         bool isSwapChainSuitable();
-        SwapChainSupportDetails querySwapChainSupport();
-        VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
-        VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
-        VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
+        void createImageViews();
+        SwapChainSupportDetails querySwapChainSupport(); //возвращает в структуру поддерживаемы форматы, режимы смены кадров, макс. и мин. extent
+        VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats); //выбор формата отображения(цветовое пространство и т.д.)
+        VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes); //режим смены кадров (fifo, mailbox,...)
+        VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities); // выбор размера отрисовываемой области
         VseDevice& refDevice;
-        VkSwapchainKHR swapChain;
-        std::vector<VkImage> swapChainImages;
+        VkSwapchainKHR swapChain; 
+        std::vector<VkImage> swapChainImages; //контейнер для хранения изображений рендринга
         VkFormat swapChainImageFormat;
-        VkExtent2D swapChainExtent;
+        VkExtent2D swapChainExtent; //размеры отрисовки изображения
     };
 }
