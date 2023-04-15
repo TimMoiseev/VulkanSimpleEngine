@@ -32,6 +32,8 @@ namespace vse {
 		VkPhysicalDevice physicalDevice = VK_NULL_HANDLE; // физическое устройство
 		VkDevice device; // логическое устройство
 		QueueFamilyIndices indices;
+		VkQueue& getGraphicsQueue() { return graphicsQueue; };
+		VkQueue& getPresentQueue() { return presentQueue; };
 	private:
 		
 		bool checkDeviceExtensionSupport(VkPhysicalDevice device);

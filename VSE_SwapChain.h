@@ -14,9 +14,15 @@ namespace vse {
     public:
         VseSwapChain(VseDevice& refDevice);
         ~VseSwapChain();
-        VkExtent2D swapChainExtent; //размеры отрисовки изображения
-    private:
+        VkExtent2D getSwapChainExtent();
+        VkFormat getSwapChainImageFormat();
+        VkSwapchainKHR& getSwapChain();
+        void createFrameBuffer(VkRenderPass& renderPass);
+        std::vector<VkFramebuffer> swapChainFramebuffers;
         std::vector<VkImageView> swapChainImageViews;
+    private:
+        VkExtent2D swapChainExtent; //размеры отрисовки изображения
+        
         bool isSwapChainSuitable();
         void createImageViews();
         SwapChainSupportDetails querySwapChainSupport(); //возвращает в структуру поддерживаемы форматы, режимы смены кадров, макс. и мин. extent

@@ -5,7 +5,9 @@ void vse::VseApp::run()
 {
 	while (!vseWindow.shouldClose()) {
 		glfwPollEvents();
-	};
+		vsePipeline.drawFrame();
+	}
+	vkDeviceWaitIdle(vseDevice.device);
 }
 
 vse::VseApp::VseApp()

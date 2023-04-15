@@ -105,13 +105,13 @@ namespace vse {
 
 	void VseDevice::createInstance()
 	{
-		if (debugMode && !checkValidationLayerSupport()) {
+		if (!checkValidationLayerSupport()) {
 			throw std::runtime_error("validation layers requested, but not available!");
 		}
 		//создаем инстанс вулкана, заполняем структуру с настройками инстанса
 		VkApplicationInfo appInfo{}; // Value initialization что бы заполнить первоначально все нулями
 		appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-		appInfo.pApplicationName = "Hello Vulkan";
+		appInfo.pApplicationName = "Hello Vulkan"; //название приложения
 		appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
 		appInfo.pEngineName = "Vulkan Simple Engine";
 		appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
